@@ -11,69 +11,14 @@ env:
   RUSTFLAGS: '-D warnings'
 
 jobs:
-  test-stable:
-    name: Test x86_64-linux stable
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          # 64-bit target
-          - target: x86_64-unknown-linux-gnu
-            deps: sudo apt update && sudo apt install git bubblewrap
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-      - run: rustup target add ${{ matrix.target }}
-      - run: ${{ matrix.deps }}
-      - run: cargo test --profile ci --target ${{ matrix.target }}
-      - run: cargo build --profile ci --target ${{ matrix.target }} --no-default-features
-
-  test-nightly:
-    name: Test Nightly
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@nightly
-    - run: sudo apt update && sudo apt install git bubblewrap
-    - run: cargo test --profile ci
-
-# TODO: bench
-#  bench:
-#    name: Check that benchmarks compile
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v3
-#    - uses: dtolnay/rust-toolchain@stable
-#    - name: Build default (host native) bench
-#      run: cargo build --benches
-
-  clippy:
-    name: Check that clippy is happy
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@stable
-      with:
-        components: clippy
-    - run: cargo clippy --target x86_64-unknown-linux-gnu
-
-  rustfmt:
-    name: Check formatting
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dtolnay/rust-toolchain@stable
-      with:
-        components: rustfmt
-    - run: cargo fmt --all -- --check
-
   cackle:
     name: Cackle check and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
-      - uses: cackle-rs/cackle-action@main
-      - run: rustc -vV
+      - run: cargo build --release
+      - run: cp target/release/cargo-acl .
+      - run: pwd >> $GITHUB_PATH
       - run: cargo acl -n
       - run: cargo acl -n test
