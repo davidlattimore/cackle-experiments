@@ -17,6 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install bubblewrap
       - run: cargo build --release
       - run: cp target/release/cargo-acl .
       - run: pwd >> $GITHUB_PATH
