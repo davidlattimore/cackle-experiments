@@ -74,5 +74,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: cackle-rs/cackle-action@main
+      - run: rustc -vV
       - run: cargo acl -n
       - run: cargo acl -n test
